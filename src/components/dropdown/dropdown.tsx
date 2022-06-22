@@ -4,7 +4,7 @@ import { MouseEvent, ReactNode, useEffect, useState } from 'react';
 
 import { CloseIcon, DownArrowIcon } from './dropdown-icons';
 
-type Option = {
+export type Option = {
   value: string;
   label: string;
 };
@@ -13,9 +13,10 @@ type DropdownProps = {
   placeHolder: ReactNode;
   options: Option[];
   isMulti?: boolean;
+  onSelect: (options: Option[]) => void;
 };
 
-export const Dropdown = ({ placeHolder, options, isMulti }: DropdownProps) => {
+export const Dropdown = ({ placeHolder, options, isMulti, onSelect }: DropdownProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selected, setSelected] = useState<Option | undefined>(undefined);
   const [multiSelected, setMultiSelected] = useState<Option[] | undefined>(undefined);
@@ -40,6 +41,7 @@ export const Dropdown = ({ placeHolder, options, isMulti }: DropdownProps) => {
 
   const onClickItem = (option: Option) => {
     setSelected(option);
+    onSelect([option]);
   };
 
   const onClickMultiItem = (option: Option) => {
@@ -47,6 +49,7 @@ export const Dropdown = ({ placeHolder, options, isMulti }: DropdownProps) => {
     if (multiSelected?.find((o) => o.value === option.value)) return;
     const newOptions = multiSelected ? [...multiSelected, option] : [option];
     setMultiSelected(newOptions);
+    onSelect(newOptions);
   };
 
   const isSelected = (option: Option) => {

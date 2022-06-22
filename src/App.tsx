@@ -1,9 +1,9 @@
 import './App.css';
 
-import { Dropdown } from './components/dropdown/dropdown';
+import { Dropdown, Option } from './components/dropdown/dropdown';
 import { DefaultRadio } from './components/radio/default-radio';
 
-const options = [
+const colorOptions = [
   { value: 'green', label: 'Green' },
   { value: 'blue', label: 'Blue' },
   { value: 'red', label: 'Red' },
@@ -12,12 +12,20 @@ const options = [
 ];
 
 const App = () => {
+  const onSelect = (options: Option[]) => {
+    console.log('onSelect', options);
+  };
   return (
     <div className=''>
       <section className='p-6 flex flex-col'>
         <DefaultRadio />
         <br />
-        <Dropdown placeHolder='Select...' options={options} isMulti />
+        <Dropdown
+          placeHolder='Select...'
+          options={colorOptions}
+          isMulti
+          onSelect={onSelect}
+        />
       </section>
     </div>
   );
