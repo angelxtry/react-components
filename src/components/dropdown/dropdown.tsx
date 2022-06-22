@@ -1,6 +1,6 @@
 import './dropdown.css';
 
-import { MouseEvent, ReactNode, useEffect, useState } from 'react';
+import { ChangeEvent, MouseEvent, ReactNode, useEffect, useRef, useState } from 'react';
 
 import { CloseIcon, DownArrowIcon } from './dropdown-icons';
 
@@ -13,13 +13,22 @@ type DropdownProps = {
   placeHolder: ReactNode;
   options: Option[];
   isMulti?: boolean;
+  isSearchable?: boolean;
   onSelect: (options: Option[]) => void;
 };
 
-export const Dropdown = ({ placeHolder, options, isMulti, onSelect }: DropdownProps) => {
+export const Dropdown = ({
+  placeHolder,
+  options,
+  isMulti,
+  isSearchable,
+  onSelect,
+}: DropdownProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selected, setSelected] = useState<Option | undefined>(undefined);
   const [multiSelected, setMultiSelected] = useState<Option[] | undefined>(undefined);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = () => setShowMenu(false);
@@ -28,6 +37,25 @@ export const Dropdown = ({ placeHolder, options, isMulti, onSelect }: DropdownPr
       window.removeEventListener('click', handler);
     };
   });
+
+  useEffect(() => {
+    setSearchKeyword('');
+    if (showMenu && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [showMenu]);
+
+  const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(e.target.value);
+  };
+  const getOptions = () => {
+    if (!searchKeyword) {
+      return options;
+    }
+    return options.filter(
+      (option) => option.label.toLowerCase().indexOf(searchKeyword.toLowerCase()) >= 0
+    );
+  };
 
   const onClickInput = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -101,7 +129,12 @@ export const Dropdown = ({ placeHolder, options, isMulti, onSelect }: DropdownPr
       </div>
       {showMenu && (
         <div className='dropdown-menu'>
-          {options.map((option) => (
+          {isSearchable && (
+            <div className='search-box'>
+              <input onChange={onSearch} value={searchKeyword} ref={searchRef} />
+            </div>
+          )}
+          {getOptions().map((option) => (
             <div
               key={option.value}
               onClick={() => (isMulti ? onClickMultiItem(option) : onClickItem(option))}

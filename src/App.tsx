@@ -24,6 +24,7 @@ const App = () => {
           placeHolder='Select...'
           options={colorOptions}
           isMulti
+          isSearchable
           onSelect={onSelect}
         />
       </section>
